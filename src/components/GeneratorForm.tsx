@@ -11,6 +11,13 @@ const ALLOWED_SCHOOLS = [
   "SMA UNGGULAN"
 ];
 
+// Daftar nama guru yang diperbolehkan (Gunakan huruf kapital/uppercase untuk konsistensi)
+const ALLOWED_TEACHERS = [
+  "NAMA GURU SATU",
+  "NAMA GURU DUA",
+  "FIDHAL TOUNA" // Tambahkan nama guru lainnya di sini
+];
+
 interface GeneratorFormProps {
   onSubmit: (data: ModulFormData) => void;
   isLoading: boolean;
@@ -56,8 +63,12 @@ export default function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProp
     dimensi: []
   });
   
-  // Fungsi pengecekan (Utility)
-  const isSchoolAllowed = ALLOWED_SCHOOLS.includes(formData.schoolName.toUpperCase());
+  // Fungsi pengecekan keamanan ganda (Sekolah DAN Guru harus valid)
+  const isSchoolAllowed = ALLOWED_SCHOOLS.includes(formData.schoolName.toUpperCase().trim());
+  const isTeacherAllowed = ALLOWED_TEACHERS.includes(formData.teacherName.toUpperCase().trim());
+  
+  // Akses hanya diberikan jika nama sekolah dan nama guru terdaftar
+  const isAccessAllowed = isSchoolAllowed && isTeacherAllowed;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -92,8 +103,8 @@ export default function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProp
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isSchoolAllowed) {
-      alert(`Maaf, Satuan Pendidikan "${formData.schoolName}" belum terdaftar.`);
+    if (!isAccessAllowed) {
+      alert(`Maaf, kombinasi Satuan Pendidikan dan Nama Guru belum terdaftar dalam sistem.`);
       return;
     }
     onSubmit(formData);
@@ -102,6 +113,9 @@ export default function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProp
   const sectionClass = "glass p-6 md:p-8 rounded-[1.5rem] space-y-6";
   const labelClass = "text-sm font-bold text-mint-800 flex items-center gap-2";
   const inputClass = "w-full bg-white/50 border border-mint-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-mint-500 focus:border-transparent outline-none transition-all";
+
+  // Kondisi untuk memunculkan warning visual (jika salah satu atau keduanya salah saat formulir mulai diisi)
+  const showWarning = (formData.schoolName || formData.teacherName) && !isAccessAllowed;
 
   return (
     <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8 pb-20">
@@ -305,7 +319,7 @@ export default function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProp
       </div>
 
       {/* 3. PERINGATAN VISUAL */}
-      {formData.schoolName && !isSchoolAllowed && (
+      {showWarning && (
         <div className="mx-4 p-4 bg-orange-50 border border-orange-200 rounded-xl animate-pulse">
           <p className="text-sm text-orange-700 font-medium">
             ⚠️ Lisensi Anda Tidak Terdaftar, Hubungi Developer TM Generator APP (Fidhal Touna AI).
@@ -315,13 +329,13 @@ export default function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProp
 
       {/* 4. SUBMIT BUTTON */}
       <motion.button
-        whileHover={!isLoading && formData.dimensi.length > 0 && isSchoolAllowed ? { scale: 1.01 } : {}}
-        whileTap={!isLoading && formData.dimensi.length > 0 && isSchoolAllowed ? { scale: 0.99 } : {}}
+        whileHover={!isLoading && formData.dimensi.length > 0 && isAccessAllowed ? { scale: 1.01 } : {}}
+        whileTap={!isLoading && formData.dimensi.length > 0 && isAccessAllowed ? { scale: 0.99 } : {}}
         type="submit"
-        disabled={isLoading || formData.dimensi.length === 0 || !isSchoolAllowed}
+        disabled={isLoading || formData.dimensi.length === 0 || !isAccessAllowed}
         className={cn(
           "w-full gradient-mint text-white font-bold py-5 rounded-2xl shadow-xl flex items-center justify-center gap-3 transition-all",
-          (isLoading || formData.dimensi.length === 0 || !isSchoolAllowed) 
+          (isLoading || formData.dimensi.length === 0 || !isAccessAllowed) 
             ? "opacity-40 cursor-not-allowed grayscale" 
             : "opacity-100 shadow-mint-500/20"
         )}
