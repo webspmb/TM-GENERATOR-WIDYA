@@ -6,15 +6,15 @@ import { cn } from '../lib/utils';
 
 // Daftar sekolah yang diperbolehkan
 const ALLOWED_SCHOOLS = [
-  "SD NEGERI KAJULANGKO",
-  "SMP TM GENERATOR APP",
-  "SMA UNGGULAN"
+  "SD NEGERI SUMOLI",
+  "SD Negeri Sumoli",
+  "SDN SUMOLI"
 ];
 
 // Daftar nama guru yang diperbolehkan (Gunakan huruf kapital/uppercase untuk konsistensi)
 const ALLOWED_TEACHERS = [
-  "NAMA GURU SATU",
-  "NAMA GURU DUA",
+  "Widya Agista Eka Pradita, S.E",
+  "WIDYA AGISTA EKA PRADITA, S.E",
   "FIDHAL TOUNA" // Tambahkan nama guru lainnya di sini
 ];
 
