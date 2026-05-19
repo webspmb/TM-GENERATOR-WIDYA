@@ -6,7 +6,7 @@ import { cn } from '../lib/utils';
 
 // Daftar sekolah yang diperbolehkan
 const ALLOWED_SCHOOLS = [
-  "SD NEGERI SUMOLI",
+  "SD Negeri Sumoli",
   "SD NEGERI SUMOLI",
   "SDN SUMOLI"
 ];
