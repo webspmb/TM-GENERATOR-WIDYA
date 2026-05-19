@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-mint-50: #f0fdf9;
+  --color-mint-100: #ccfbf1;
+  --color-mint-200: #99f6e4;
+  --color-mint-300: #5eead4;
+  --color-mint-400: #2dd4bf;
+  --color-mint-500: #14b8a6;
+  --color-mint-600: #0d9488;
+  --color-mint-700: #0f766e;
+  --color-mint-800: #115e59;
+  --color-mint-900: #134e4a;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@utility glass {
+  background-color: rgb(255 255 255 / 0.7);
+  backdrop-filter: blur(12px);
+  border-width: 1px;
+  border-color: rgb(255 255 255 / 0.2);
+  box-shadow: var(--shadow-xl);
+}
+
+@utility glass-dark {
+  background-color: color-mix(in srgb, var(--color-mint-900) 40%, transparent);
+  backdrop-filter: blur(16px);
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--color-mint-500) 20%, transparent);
+  box-shadow: var(--shadow-2xl);
+}
+
+@utility gradient-mint {
+  background: linear-gradient(135deg, var(--color-mint-400) 0%, var(--color-mint-600) 100%);
+}
+
+@utility gradient-bg {
+  background: radial-gradient(circle at top left, var(--color-mint-50) 0%, var(--color-mint-100) 50%, var(--color-mint-200) 100%);
+}
+
+body {
+  @apply gradient-bg min-h-screen text-slate-800 antialiased;
+}
+
+/* Custom table styles for spreadsheet look */
+.spreadsheet-table {
+  width: 100%;
+  border-collapse: collapse;
+  @apply text-sm;
+}
+
+.spreadsheet-table th, .spreadsheet-table td {
+  border: 1px solid #cbd5e1;
+  padding: 0.75rem;
+  vertical-align: top;
+}
+
+.spreadsheet-table th {
+  @apply bg-mint-50 text-mint-900 font-bold uppercase tracking-wider;
+}
+
+.spreadsheet-table td {
+  @apply bg-white;
+}
+
+.signature-table, .signature-table td {
+  border: none !important;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
