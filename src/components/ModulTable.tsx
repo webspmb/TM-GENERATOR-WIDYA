@@ -97,12 +97,6 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
             margin: 0 auto 2rem;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
             overflow: visible;
-            transition: all 0.3s ease-in-out;
-          }
-          /* Menggunakan zoom agar lembar dokumen mengecil dengan aman di tengah layar */
-          .bg-white.scaled-down {
-            zoom: 80%; 
-            opacity: 0.75;
           }
         }
       ` }}></style>
@@ -113,18 +107,18 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
         </button>
 
         <div className="relative">
-          <button onClick={() => setShowExportOptions(!showExportOptions)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all z-[60] relative">
+          <button onClick={() => setShowExportOptions(!showExportOptions)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all">
             <Download className="w-5 h-5" /> Unduh / Cetak
           </button>
           
           <AnimatePresence>
             {showExportOptions && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full right-0 mt-2 w-44 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-[70]">
-                <button onClick={downloadWord} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-slate-700 text-sm border-b border-slate-100 transition-colors">
-                  <FileText className="w-4.5 h-4.5 text-blue-500 shrink-0" /> Format Word
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-50">
+                <button onClick={downloadWord} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-slate-700 border-b border-slate-100 transition-colors">
+                  <FileText className="w-5 h-5 text-blue-500" /> Format Word (.doc)
                 </button>
-                <button onClick={handlePrint} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-slate-700 text-sm transition-colors">
-                  <Printer className="w-4.5 h-4.5 text-orange-500 shrink-0" /> Cetak Browser
+                <button onClick={handlePrint} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-slate-700 transition-colors">
+                  <Printer className="w-5 h-5 text-orange-500" /> Cetak / Print Browser
                 </button>
               </motion.div>
             )}
@@ -132,13 +126,7 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
         </div>
       </div>
 
-      {/* PERBAIKAN: Mengganti cn() dengan string literals standar agar bebas error */}
-      <div 
-        ref={containerRef} 
-        className={`bg-white p-8 md:p-12 shadow-sm border border-slate-200 text-slate-900 relative transition-all duration-300 ${
-          showExportOptions ? 'scaled-down' : ''
-        }`}
-      >
+      <div ref={containerRef} className="bg-white p-8 md:p-12 shadow-sm border border-slate-200 text-slate-900 relative">
         <div className="print-watermark">
           {data.identitas.schoolName || formInput.schoolName || "DOKUMEN ASLI"}
         </div>
@@ -244,7 +232,7 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
             </table>
           </section>
 
-          {/* Section 4: Pengalaman Belajar */}
+{/* Section 4: Pengalaman Belajar */}
           <section>
             <h2 className="text-sm font-bold bg-mint-50 p-2 border border-slate-300">4. PENGALAMAN BELAJAR</h2>
             <table className="spreadsheet-table">
