@@ -85,7 +85,7 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
           }
           .no-print { display: none !important; }
           @page { margin: 1.5cm; }
-          body { background: white !important; -webkit-print-color-adjust: exact; transform: scale(1) !important; }
+          body { background: white !important; -webkit-print-color-adjust: exact; }
         }
         .print-watermark { display: none; }
         .spreadsheet-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
@@ -97,14 +97,12 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
             margin: 0 auto 2rem;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
             overflow: visible;
-            transition: all 0.4s ease-in-out; /* Efek transisi halus saat mengecil */
-            transform-origin: top center;
+            transition: all 0.3s ease-in-out;
           }
-          /* Class tambahan saat opsi ekspor terbuka */
+          /* Menggunakan zoom agar lembar dokumen mengecil dengan aman di tengah layar */
           .bg-white.scaled-down {
-            transform: scale(0.75); /* Memperkecil kertas di layar sebesar 25% */
-            opacity: 0.6; /* Membuatnya sedikit transparan agar fokus ke menu */
-            filter: blur(1px); /* Efek blur halus pada kertas latar belakang */
+            zoom: 80%; 
+            opacity: 0.75;
           }
         }
       ` }}></style>
@@ -134,13 +132,12 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
         </div>
       </div>
 
-      {/* Menambahkan logika kondisi class 'scaled-down' jika showExportOptions bernilai true */}
+      {/* PERBAIKAN: Mengganti cn() dengan string literals standar agar bebas error */}
       <div 
         ref={containerRef} 
-        className={cn(
-          "bg-white p-8 md:p-12 shadow-sm border border-slate-200 text-slate-900 relative",
-          showExportOptions && "scaled-down"
-        )}
+        className={`bg-white p-8 md:p-12 shadow-sm border border-slate-200 text-slate-900 relative transition-all duration-300 ${
+          showExportOptions ? 'scaled-down' : ''
+        }`}
       >
         <div className="print-watermark">
           {data.identitas.schoolName || formInput.schoolName || "DOKUMEN ASLI"}
