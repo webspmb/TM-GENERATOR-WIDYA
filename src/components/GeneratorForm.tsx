@@ -113,24 +113,22 @@ export default function GeneratorForm({ onSubmit, isLoading, savedData }: Genera
     onSubmit(formData);
   };
 
-  // Konfigurasi style terpusat bertema Lime & Emerald
-  const sectionClass = "glass p-6 md:p-8 rounded-[1.5rem] space-y-6 border border-white/40";
-  const labelClass = "text-sm font-bold text-emerald-900 flex items-center gap-2";
-  const inputClass = "w-full bg-white/60 border border-emerald-100 rounded-xl py-3 px-4 focus:ring-2 focus:ring-lime-500 focus:border-transparent outline-none transition-all text-emerald-950 placeholder:text-emerald-300";
-  const iconContainerClass = "p-2 rounded-lg bg-lime-100 text-lime-700";
+  const sectionClass = "glass p-6 md:p-8 rounded-[1.5rem] space-y-6";
+  const labelClass = "text-sm font-bold text-mint-800 flex items-center gap-2";
+  const inputClass = "w-full bg-white/50 border border-mint-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-mint-500 focus:border-transparent outline-none transition-all";
 
-  // Kondisi untuk memunculkan warning visual
+  // Kondisi untuk memunculkan warning visual (jika salah satu atau keduanya salah saat formulir mulai diisi)
   const showWarning = (formData.schoolName || formData.teacherName) && !isAccessAllowed;
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8 pb-20 px-4 md:px-0">
+    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-8 pb-20">
       {/* Header Info */}
       <div className={sectionClass}>
         <div className="flex items-center gap-3 mb-2">
-          <div className={iconContainerClass}>
+          <div className="p-2 rounded-lg bg-mint-100 text-mint-600">
             <School className="w-5 h-5" />
           </div>
-          <h2 className="text-xl font-bold text-emerald-950">Identitas Satuan Pendidikan</h2>
+          <h2 className="text-xl font-bold text-mint-900">Identitas Satuan Pendidikan</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
@@ -167,10 +165,10 @@ export default function GeneratorForm({ onSubmit, isLoading, savedData }: Genera
       {/* Curriculum Details */}
       <div className={sectionClass}>
         <div className="flex items-center gap-3 mb-2">
-          <div className={iconContainerClass}>
+          <div className="p-2 rounded-lg bg-mint-100 text-mint-600">
             <GraduationCap className="w-5 h-5" />
           </div>
-          <h2 className="text-xl font-bold text-emerald-950">Informasi Pembelajaran</h2>
+          <h2 className="text-xl font-bold text-mint-900">Informasi Pembelajaran</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
@@ -218,10 +216,10 @@ export default function GeneratorForm({ onSubmit, isLoading, savedData }: Genera
       {/* Logistics & Pedagogy */}
       <div className={sectionClass}>
         <div className="flex items-center gap-3 mb-2">
-          <div className={iconContainerClass}>
+          <div className="p-2 rounded-lg bg-mint-100 text-mint-600">
             <Clock className="w-5 h-5" />
           </div>
-          <h2 className="text-xl font-bold text-emerald-950">Metode & Durasi</h2>
+          <h2 className="text-xl font-bold text-mint-900">Metode & Durasi</h2>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -231,9 +229,9 @@ export default function GeneratorForm({ onSubmit, isLoading, savedData }: Genera
               <button 
                 type="button" 
                 onClick={() => updateMeetings(-1)} 
-                className="w-12 h-12 rounded-xl border-2 border-emerald-100 flex items-center justify-center bg-white/80 hover:bg-lime-50 hover:border-lime-300 transition-colors"
+                className="w-12 h-12 rounded-xl border-2 border-mint-200 flex items-center justify-center hover:bg-mint-50 transition-colors"
               >
-                <Minus className="w-5 h-5 text-emerald-700"/>
+                <Minus className="w-5 h-5 text-mint-600"/>
               </button>
 
               <input
@@ -241,3 +239,122 @@ export default function GeneratorForm({ onSubmit, isLoading, savedData }: Genera
                 name="meetings"
                 value={formData.meetings}
                 onChange={(e) => {
+                  const val = Math.max(1, parseInt(e.target.value) || 1);
+                  const diff = val - formData.meetings;
+                  updateMeetings(diff);
+                }}
+                className="w-20 h-12 text-center text-xl font-bold bg-white/50 border-2 border-mint-200 rounded-xl focus:ring-2 focus:ring-mint-500 outline-none transition-all"
+                min="1"
+              />
+
+              <button 
+                type="button" 
+                onClick={() => updateMeetings(1)} 
+                className="w-12 h-12 rounded-xl border-2 border-mint-200 flex items-center justify-center hover:bg-mint-50 transition-colors"
+              >
+                <Plus className="w-5 h-5 text-mint-600"/>
+              </button>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <label className={labelClass}><Clock className="w-4 h-4"/> Durasi Per Pertemuan</label>
+            <input name="duration" value={formData.duration} onChange={handleChange} className={inputClass} placeholder="Contoh: 2 x 35 menit" required />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <label className={labelClass}>Praktik Pedagogis Per Pertemuan</label>
+          <div className="grid grid-cols-1 gap-4">
+            {Array.from({ length: formData.meetings }).map((_, idx) => (
+              <div key={idx} className="flex flex-col md:flex-row md:items-center gap-4 bg-white/30 p-4 rounded-xl border border-mint-100">
+                <span className="text-sm font-bold text-mint-600 shrink-0">Pertemuan {idx + 1}:</span>
+                <div className="flex flex-wrap gap-2">
+                  {PEDAGOGY_OPTIONS.map(opt => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => handlePedagogyChange(idx, opt)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all",
+                        formData.pedagogy[idx] === opt 
+                          ? "bg-mint-500 border-mint-500 text-white shadow-sm shadow-mint-500/30" 
+                          : "bg-white border-mint-200 text-mint-700 hover:border-mint-400"
+                      )}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Dimensi Lulusan */}
+      <div className={sectionClass}>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 rounded-lg bg-mint-100 text-mint-600">
+            <Layers className="w-5 h-5" />
+          </div>
+          <h2 className="text-xl font-bold text-mint-900">Dimensi Lulusan</h2>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {DIMENSI_LULUSAN.map(item => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => handleDimensiToggle(item)}
+              className={cn(
+                "px-4 py-2 rounded-xl text-sm font-semibold border transition-all",
+                formData.dimensi.includes(item)
+                  ? "bg-mint-600 border-mint-600 text-white shadow-md shadow-mint-600/20"
+                  : "bg-white border-mint-200 text-mint-700 hover:border-mint-400"
+              )}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+        {formData.dimensi.length === 0 && (
+          <p className="text-xs text-mint-500 italic">Pilih minimal satu dimensi lulusan.</p>
+        )}
+      </div>
+
+      {/* 3. PERINGATAN VISUAL */}
+      {showWarning && (
+        <div className="mx-4 p-4 bg-orange-50 border border-orange-200 rounded-xl animate-pulse">
+          <p className="text-sm text-orange-700 font-medium">
+            ⚠️ Lisensi Anda Tidak Terdaftar, Hubungi Developer TM Generator APP (Fidhal Touna AI).
+          </p>
+        </div>
+      )}
+
+      {/* 4. SUBMIT BUTTON */}
+      <motion.button
+        whileHover={!isLoading && formData.dimensi.length > 0 && isAccessAllowed ? { scale: 1.01 } : {}}
+        whileTap={!isLoading && formData.dimensi.length > 0 && isAccessAllowed ? { scale: 0.99 } : {}}
+        type="submit"
+        disabled={isLoading || formData.dimensi.length === 0 || !isAccessAllowed}
+        className={cn(
+          "w-full gradient-mint text-white font-bold py-5 rounded-2xl shadow-xl flex items-center justify-center gap-3 transition-all",
+          (isLoading || formData.dimensi.length === 0 || !isAccessAllowed) 
+            ? "opacity-40 cursor-not-allowed grayscale" 
+            : "opacity-100 shadow-mint-500/20"
+        )}
+      >
+        {isLoading ? (
+          <>
+            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Generating Modul Ajar...
+          </>
+        ) : (
+          <>
+            <Send className="w-6 h-6" />
+            Generate RPPM
+          </>
+        )}
+      </motion.button>
+    </form>
+  );
+}
