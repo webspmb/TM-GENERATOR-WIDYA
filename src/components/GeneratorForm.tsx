@@ -7,7 +7,7 @@ import { cn } from '../lib/utils';
 // Daftar sekolah yang diperbolehkan
 const ALLOWED_SCHOOLS = [
   "SD NEGERI SUMOLI",
-  "SD Negeri Sumoli",
+  "SD NEGERI SUMOLI",
   "SDN SUMOLI"
 ];
 
@@ -21,6 +21,8 @@ const ALLOWED_TEACHERS = [
 interface GeneratorFormProps {
   onSubmit: (data: ModulFormData) => void;
   isLoading: boolean;
+  // Tambahkan props opsional untuk menampung data lama dari parent komponen
+  savedData?: ModulFormData | null; 
 }
 
 const DIMENSI_LULUSAN = [
@@ -42,25 +44,26 @@ const PEDAGOGY_OPTIONS = [
   'Station Learning'
 ];
 
-export default function GeneratorForm({ onSubmit, isLoading }: GeneratorFormProps) {
+export default function GeneratorForm({ onSubmit, isLoading, savedData }: GeneratorFormProps) {
+  // Gunakan savedData sebagai nilai awal jika ada, jika tidak ada baru gunakan nilai default kosong
   const [formData, setFormData] = useState<ModulFormData>({
-    schoolName: '',
-    teacherName: '',
-    teacherNip: '',
-    position: 'Guru Kelas',
-    principalName: '',
-    principalNip: '',
-    level: 'SD',
-    grade: '',
-    semester: 'I / Ganjil',
-    subject: '',
-    cp: '',
-    tp: '',
-    material: '',
-    meetings: 1,
-    duration: '',
-    pedagogy: [],
-    dimensi: []
+    schoolName: savedData?.schoolName || '',
+    teacherName: savedData?.teacherName || '',
+    teacherNip: savedData?.teacherNip || '',
+    position: savedData?.position || 'Guru Kelas',
+    principalName: savedData?.principalName || '',
+    principalNip: savedData?.principalNip || '',
+    level: savedData?.level || 'SD',
+    grade: savedData?.grade || '',
+    semester: savedData?.semester || 'I / Ganjil',
+    subject: savedData?.subject || '',
+    cp: savedData?.cp || '',
+    tp: savedData?.tp || '',
+    material: savedData?.material || '',
+    meetings: savedData?.meetings || 1,
+    duration: savedData?.duration || '',
+    pedagogy: savedData?.pedagogy || [],
+    dimensi: savedData?.dimensi || []
   });
   
   // Fungsi pengecekan keamanan ganda (Sekolah DAN Guru harus valid)
