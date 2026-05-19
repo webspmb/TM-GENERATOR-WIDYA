@@ -85,7 +85,7 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
           }
           .no-print { display: none !important; }
           @page { margin: 1.5cm; }
-          body { background: white !important; -webkit-print-color-adjust: exact; }
+          body { background: white !important; -webkit-print-color-adjust: exact; transform: scale(1) !important; }
         }
         .print-watermark { display: none; }
         .spreadsheet-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
@@ -97,6 +97,14 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
             margin: 0 auto 2rem;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
             overflow: visible;
+            transition: all 0.4s ease-in-out; /* Efek transisi halus saat mengecil */
+            transform-origin: top center;
+          }
+          /* Class tambahan saat opsi ekspor terbuka */
+          .bg-white.scaled-down {
+            transform: scale(0.75); /* Memperkecil kertas di layar sebesar 25% */
+            opacity: 0.6; /* Membuatnya sedikit transparan agar fokus ke menu */
+            filter: blur(1px); /* Efek blur halus pada kertas latar belakang */
           }
         }
       ` }}></style>
@@ -107,31 +115,17 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
         </button>
 
         <div className="relative">
-          <button onClick={() => setShowExportOptions(!showExportOptions)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all">
+          <button onClick={() => setShowExportOptions(!showExportOptions)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all z-[60] relative">
             <Download className="w-5 h-5" /> Unduh / Cetak
           </button>
           
           <AnimatePresence>
             {showExportOptions && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                exit={{ opacity: 0, y: 10 }} 
-                /* Mengubah w-56 menjadi w-44 agar kotak menu lebih ramping dan pas dengan teks */
-                className="absolute top-full right-0 mt-2 w-44 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-50"
-              >
-                <button 
-                  onClick={downloadWord} 
-                  /* Menambahkan text-sm agar ukuran font serasi dengan kotak yang diperkecil */
-                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-slate-700 text-sm border-b border-slate-100 transition-colors"
-                >
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full right-0 mt-2 w-44 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-[70]">
+                <button onClick={downloadWord} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-slate-700 text-sm border-b border-slate-100 transition-colors">
                   <FileText className="w-4.5 h-4.5 text-blue-500 shrink-0" /> Format Word
                 </button>
-                <button 
-                  onClick={handlePrint} 
-                  /* Menambahkan text-sm agar ukuran font serasi dengan kotak yang diperkecil */
-                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-slate-700 text-sm transition-colors"
-                >
+                <button onClick={handlePrint} className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-slate-700 text-sm transition-colors">
                   <Printer className="w-4.5 h-4.5 text-orange-500 shrink-0" /> Cetak Browser
                 </button>
               </motion.div>
@@ -140,7 +134,14 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
         </div>
       </div>
 
-      <div ref={containerRef} className="bg-white p-8 md:p-12 shadow-sm border border-slate-200 text-slate-900 relative">
+      {/* Menambahkan logika kondisi class 'scaled-down' jika showExportOptions bernilai true */}
+      <div 
+        ref={containerRef} 
+        className={cn(
+          "bg-white p-8 md:p-12 shadow-sm border border-slate-200 text-slate-900 relative",
+          showExportOptions && "scaled-down"
+        )}
+      >
         <div className="print-watermark">
           {data.identitas.schoolName || formInput.schoolName || "DOKUMEN ASLI"}
         </div>
@@ -246,7 +247,7 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
             </table>
           </section>
 
-{/* Section 4: Pengalaman Belajar */}
+          {/* Section 4: Pengalaman Belajar */}
           <section>
             <h2 className="text-sm font-bold bg-mint-50 p-2 border border-slate-300">4. PENGALAMAN BELAJAR</h2>
             <table className="spreadsheet-table">
