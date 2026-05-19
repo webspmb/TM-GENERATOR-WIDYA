@@ -113,12 +113,26 @@ export default function ModulTable({ data, formInput, onBack }: ModulTableProps)
           
           <AnimatePresence>
             {showExportOptions && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-50">
-                <button onClick={downloadWord} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-slate-700 border-b border-slate-100 transition-colors">
-                  <FileText className="w-5 h-5 text-blue-500" /> Format Word (.doc)
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0, y: 10 }} 
+                /* Mengubah w-56 menjadi w-44 agar kotak menu lebih ramping dan pas dengan teks */
+                className="absolute top-full right-0 mt-2 w-44 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-50"
+              >
+                <button 
+                  onClick={downloadWord} 
+                  /* Menambahkan text-sm agar ukuran font serasi dengan kotak yang diperkecil */
+                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-slate-700 text-sm border-b border-slate-100 transition-colors"
+                >
+                  <FileText className="w-4.5 h-4.5 text-blue-500 shrink-0" /> Format Word
                 </button>
-                <button onClick={handlePrint} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 text-slate-700 transition-colors">
-                  <Printer className="w-5 h-5 text-orange-500" /> Cetak / Print Browser
+                <button 
+                  onClick={handlePrint} 
+                  /* Menambahkan text-sm agar ukuran font serasi dengan kotak yang diperkecil */
+                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-slate-700 text-sm transition-colors"
+                >
+                  <Printer className="w-4.5 h-4.5 text-orange-500 shrink-0" /> Cetak Browser
                 </button>
               </motion.div>
             )}
