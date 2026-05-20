@@ -15,7 +15,7 @@ const ALLOWED_SCHOOLS = [
 const ALLOWED_TEACHERS = [
   "Widya Agista Eka Pradita, S.E",
   "WIDYA AGISTA EKA PRADITA, S.E",
-  "FIDHAL TOUNA" // Tambahkan nama guru lainnya di sini
+  "Widya Agista Eka Pradita,S.E" // Tambahkan nama guru lainnya di sini
 ];
 
 interface GeneratorFormProps {
