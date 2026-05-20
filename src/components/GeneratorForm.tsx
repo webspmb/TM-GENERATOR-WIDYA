@@ -67,8 +67,13 @@ export default function GeneratorForm({ onSubmit, isLoading, savedData }: Genera
   });
   
   // Fungsi pengecekan keamanan ganda (Sekolah DAN Guru harus valid)
-  const isSchoolAllowed = ALLOWED_SCHOOLS.includes(formData.schoolName.toUpperCase().trim());
-  const isTeacherAllowed = ALLOWED_TEACHERS.includes(formData.teacherName.toUpperCase().trim());
+  const isSchoolAllowed = ALLOWED_SCHOOLS.some(
+  school => school.toUpperCase().trim() === formData.schoolName.toUpperCase().trim()
+  );
+
+  const isTeacherAllowed = ALLOWED_TEACHERS.some(
+  teacher => teacher.toUpperCase().trim() === formData.teacherName.toUpperCase().trim()
+  );
   
   // Akses hanya diberikan jika nama sekolah dan nama guru terdaftar
   const isAccessAllowed = isSchoolAllowed && isTeacherAllowed;
