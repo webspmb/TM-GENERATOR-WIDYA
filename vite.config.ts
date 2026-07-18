@@ -8,7 +8,19 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
     define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || ''),
+      'process.env.GEMINI_API_KEY_2': JSON.stringify(env.GEMINI_API_KEY_2 || ''),
+      'process.env.GEMINI_API_KEY_FALLBACK': JSON.stringify(env.GEMINI_API_KEY_FALLBACK || ''),
+      'process.env.GEMINI_API_KEY_SECONDARY': JSON.stringify(env.GEMINI_API_KEY_SECONDARY || ''),
+      'process.env.SECONDARY_GEMINI_API_KEY': JSON.stringify(env.SECONDARY_GEMINI_API_KEY || ''),
+      'process.env.GROQ_API_KEY': JSON.stringify(env.GROQ_API_KEY || ''),
+      'process.env.GROQ_API_KEY_1': JSON.stringify(env.GROQ_API_KEY_1 || ''),
+      'process.env.GROQ_API_KEY_2': JSON.stringify(env.GROQ_API_KEY_2 || ''),
+      'process.env.GROQ_API_KEY_3': JSON.stringify(env.GROQ_API_KEY_3 || ''),
+      'process.env.GROQ_API_KEY_SECONDARY': JSON.stringify(env.GROQ_API_KEY_SECONDARY || ''),
+      'process.env.SECONDARY_GROQ_API_KEY': JSON.stringify(env.SECONDARY_GROQ_API_KEY || ''),
+      'process.env.GROQ_API_KEY_TERTIARY': JSON.stringify(env.GROQ_API_KEY_TERTIARY || ''),
+      'process.env.TERTIARY_GROQ_API_KEY': JSON.stringify(env.TERTIARY_GROQ_API_KEY || ''),
     },
     resolve: {
       alias: {
