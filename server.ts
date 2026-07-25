@@ -230,28 +230,33 @@ initKV();
 
   // API: Save a new interactive student quiz (creates short ID)
   app.post("/api/quizzes", async (req, res) => {
-    const quizzes = await fetchFromKV("quizzes");
-    if (quizzes && typeof quizzes === "object") {
-      quizzesDb = { ...quizzesDb, ...quizzes };
+    try {
+      const quizzes = await fetchFromKV("quizzes");
+      if (quizzes && typeof quizzes === "object") {
+        quizzesDb = { ...quizzesDb, ...quizzes };
+      }
+
+      const quizPayload = req.body;
+      if (!quizPayload || !quizPayload.soal) {
+        return res.status(400).json({ error: "Data lembar soal tidak lengkap." });
+      }
+
+      let quizId = quizPayload.quizId;
+      if (!quizId) {
+        const subject = String(quizPayload.subject || "kuis").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+        const randomSuffix = Math.random().toString(36).substring(2, 8);
+        quizId = `${subject}_${randomSuffix}`;
+      }
+
+      quizzesDb[quizId] = quizPayload;
+      saveQuizzes();
+      await saveToKV("quizzes", quizzesDb);
+
+      res.json({ success: true, quizId });
+    } catch (err: any) {
+      console.error("SERVER ERROR IN /api/quizzes:", err);
+      res.status(500).json({ error: "Terjadi kesalahan server saat mendaftarkan kuis.", details: err.message || String(err) });
     }
-
-    const quizPayload = req.body;
-    if (!quizPayload || !quizPayload.soal) {
-      return res.status(400).json({ error: "Data lembar soal tidak lengkap." });
-    }
-
-    let quizId = quizPayload.quizId;
-    if (!quizId) {
-      const subject = (quizPayload.subject || "kuis").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
-      const randomSuffix = Math.random().toString(36).substring(2, 8);
-      quizId = `${subject}_${randomSuffix}`;
-    }
-
-    quizzesDb[quizId] = quizPayload;
-    saveQuizzes();
-    await saveToKV("quizzes", quizzesDb);
-
-    res.json({ success: true, quizId });
   });
 
   // API: Get a saved student quiz by short ID
