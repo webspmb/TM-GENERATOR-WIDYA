@@ -80,10 +80,11 @@ export default function AsesmenResult({ data, formInput, onBack, config, onUpdat
   const [activeTab, setActiveTab] = useState<ActiveTab>('kisi-kisi');
   const [showExportOptions, setShowExportOptions] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasAttemptedRegister = useRef(false);
 
   // Editable Title State (allows direct text-editing)
   const [editableTitle, setEditableTitle] = useState(() => {
-    const base = data.identitas.jenisAsesmen || "Asesmen";
+    const base = data?.identitas?.jenisAsesmen || "Asesmen";
     return base.toLowerCase().includes("kurikulum") ? base : `${base} Kurikulum Merdeka`;
   });
 
@@ -96,10 +97,10 @@ export default function AsesmenResult({ data, formInput, onBack, config, onUpdat
   const [isRegisteringQuiz, setIsRegisteringQuiz] = useState(false);
 
   // Lazy loading states
-  const [currentKisiKisi, setCurrentKisiKisi] = useState(data.kisiKisi || []);
-  const [currentSoal, setCurrentSoal] = useState<QuestionItem[]>(data.soal || []);
-  const [currentKunci, setCurrentKunci] = useState<KunciPembahasanItem[]>(data.kunciPembahasan || []);
-  const [currentRubrik, setCurrentRubrik] = useState<Record<number, string>>(data.rubrik || {});
+  const [currentKisiKisi, setCurrentKisiKisi] = useState(data?.kisiKisi || []);
+  const [currentSoal, setCurrentSoal] = useState<QuestionItem[]>(data?.soal || []);
+  const [currentKunci, setCurrentKunci] = useState<KunciPembahasanItem[]>(data?.kunciPembahasan || []);
+  const [currentRubrik, setCurrentRubrik] = useState<Record<number, string>>(data?.rubrik || {});
 
   const [loadingSoal, setLoadingSoal] = useState(false);
   const [loadingKunci, setLoadingKunci] = useState(false);
@@ -248,14 +249,14 @@ export default function AsesmenResult({ data, formInput, onBack, config, onUpdat
         menjodohkanCount: config?.menjodohkanCount || 0,
       } as AsesmenConfig;
 
-      let activeSoal = currentSoal;
-      if (currentSoal.length === 0 && !loadingSoal) {
+      let activeSoal = currentSoal || [];
+      if (activeSoal.length === 0 && !loadingSoal) {
         setLoadingSoal(true);
         try {
           console.log("[BACKGROUND] Auto-generating soal for online exam...");
           const generated = await generateAsesmenSoal(formInput, actualConfig, currentKisiKisi);
-          setCurrentSoal(generated);
-          activeSoal = generated;
+          setCurrentSoal(generated || []);
+          activeSoal = generated || [];
         } catch (err: any) {
           console.error("Gagal melakukan generator soal latar belakang:", err);
           setLoadingError("Gagal merumuskan lembar soal otomatis untuk ujian online.");
@@ -264,12 +265,12 @@ export default function AsesmenResult({ data, formInput, onBack, config, onUpdat
         }
       }
 
-      if (currentKunci.length === 0 && !loadingKunci && activeSoal.length > 0) {
+      if ((!currentKunci || currentKunci.length === 0) && !loadingKunci && activeSoal.length > 0) {
         setLoadingKunci(true);
         try {
           console.log("[BACKGROUND] Auto-generating kunci for online exam...");
           const generatedKeys = await generateAsesmenKunci(formInput, actualConfig, activeSoal);
-          setCurrentKunci(generatedKeys);
+          setCurrentKunci(generatedKeys || []);
         } catch (err: any) {
           console.error("Gagal melakukan generator kunci latar belakang:", err);
           setLoadingError("Gagal merumuskan kunci jawaban otomatis untuk ujian online.");
@@ -280,12 +281,14 @@ export default function AsesmenResult({ data, formInput, onBack, config, onUpdat
     };
 
     autoGenerateForOnline();
-  }, [isOnlineActive, currentSoal.length, currentKunci.length, currentKisiKisi, config, formInput]);
+  }, [isOnlineActive, currentSoal?.length, currentKunci?.length, currentKisiKisi, config, formInput]);
 
   // Register online interactive quiz structure on Express server in exchange for small unique id proactively on mount
   useEffect(() => {
     const registerQuiz = async () => {
-      if (quizId || isRegisteringQuiz || currentSoal.length === 0 || currentKunci.length === 0) return;
+      if (quizId || isRegisteringQuiz || !currentSoal || currentSoal.length === 0 || !currentKunci || currentKunci.length === 0 || hasAttemptedRegister.current) return;
+      
+      hasAttemptedRegister.current = true;
       setIsRegisteringQuiz(true);
       try {
         const optimizedSoal = currentSoal.map(s => ({
@@ -302,10 +305,10 @@ export default function AsesmenResult({ data, formInput, onBack, config, onUpdat
         }));
 
         const quizPayload = {
-          schoolName: data.identitas.schoolName || formInput.schoolName || "SD NEGERI 1 MERDEKA",
-          subject: data.identitas.subject,
-          grade: formInput.grade,
-          semester: formInput.semester,
+          schoolName: data?.identitas?.schoolName || formInput?.schoolName || "SD NEGERI 1 MERDEKA",
+          subject: data?.identitas?.subject || formInput?.subject || "Kuis",
+          grade: formInput?.grade || "Kelas 4",
+          semester: formInput?.semester || "1",
           jenisAsesmen: editableTitle,
           soal: optimizedSoal,
           kunci: currentKunci
@@ -321,6 +324,8 @@ export default function AsesmenResult({ data, formInput, onBack, config, onUpdat
           if (resData.quizId) {
             setQuizId(resData.quizId);
           }
+        } else {
+          console.error("Gagal mendaftarkan kuis ke server (status non-200):", res.status);
         }
       } catch (err) {
         console.error("Gagal mendaftarkan kuis ke server:", err);
@@ -328,6 +333,7 @@ export default function AsesmenResult({ data, formInput, onBack, config, onUpdat
         setIsRegisteringQuiz(false);
       }
     };
+    
     registerQuiz();
   }, [currentSoal, currentKunci, quizId]);
 
